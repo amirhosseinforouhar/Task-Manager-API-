@@ -1,33 +1,22 @@
 const express = require('express');
 const dotenv = require("dotenv");
-const connectDB = require('./db/connectDB');
-const tasksRouter = require("./Routes/tasks");
-const errorHandler = require('./MiddleWares/errorHandler');
+const connectToMongoDB = require("./db/connectDB")
+const errorHandlerMiddleWare = require('./middleWares/errorHandler.middleware');
 
 const app = express ()
-dotenv.config({path : `${__dirname}/Configs/config.env`})
+dotenv.config({path : `${__dirname}/configs/config.env`})
 
-// middlewares 
 app.use(express.json())
 
-// Routes 
-app.use("/tasks" , tasksRouter)
+
+app.use("/tasks" , require("./routes/tasks.routes"))
 
 
-// error handler middleware  
-app.use(errorHandler)
+app.use(errorHandlerMiddleWare)
 
-const PORT = process.env.PORT || 3000 ; 
-const start = async () => {
-    try {
-        await connectDB ()
-        app.listen(PORT , () => {
-            console.log(`server running on port ${PORT}...`)
-        })
-    } catch (error) {
-        console.log(error);
-    }
-}
+connectToMongoDB()
 
-start()
+
+const PORT = process.env.PORT || 3000 
+app.listen(PORT , () => console.log(`http://localhost:${PORT}`))
 
